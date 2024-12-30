@@ -14,6 +14,9 @@ function App() {
             <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
               Tooltipper
             </h1>
+            <p className="text-gray-700 text-center mb-8">
+              Annotate your photos with tooltips and share them with others. Click on the image to add a tooltip.
+            </p>
             <Routes>
               <Route path="/" element={<PhotoAnnotator />} />
               <Route path="/view/:shortId" element={<ViewMode />} />
