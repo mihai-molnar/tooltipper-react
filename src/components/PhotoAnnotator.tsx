@@ -192,6 +192,8 @@ export default function PhotoAnnotator() {
           </div>
         )}
       </div>
+      
+      {!imageLoaded && <div className="mt-4">Loading...</div>}
 
       <div className="mt-4">
         {imageLoaded && <ShareButton shortId={photo.short_id} />}
