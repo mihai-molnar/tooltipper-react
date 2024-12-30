@@ -9,6 +9,7 @@ export default function PhotoAnnotator() {
   const [tooltips, setTooltips] = useState<Tooltip[]>([]);
   const [newTooltip, setNewTooltip] = useState<{ x: number; y: number } | null>(null);
   const [tooltipText, setTooltipText] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const generateShortId = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -22,7 +23,7 @@ export default function PhotoAnnotator() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    setLoading(true);
     try {
       // Upload image to Supabase Storage
       const filename = `${Math.random()}.${file.name.split('.').pop()}`;
@@ -53,6 +54,7 @@ export default function PhotoAnnotator() {
     } catch (error) {
       console.error('Error uploading photo:', error);
     }
+    setLoading(false);
   };
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
@@ -114,7 +116,7 @@ export default function PhotoAnnotator() {
           htmlFor="photo-upload"
           className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600 transition-colors"
         >
-          Upload Photo
+          {loading ? 'Uploading...' : 'Upload Photo'}
         </label>
       </div>
     );
@@ -193,9 +195,9 @@ export default function PhotoAnnotator() {
         )}
       </div>
       
-      {!imageLoaded && <div className="mt-4">Loading...</div>}
+      {!imageLoaded && <div className="mt-4 text-center text-lg">Loading...</div>}
 
-      <div className="mt-4">
+      <div className="mt-4 text-center">
         {imageLoaded && <ShareButton shortId={photo.short_id} />}
       </div>
     </div>
