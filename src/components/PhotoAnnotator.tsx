@@ -5,6 +5,7 @@ import type { Tooltip } from '../types';
 
 export default function PhotoAnnotator() {
   const [photo, setPhoto] = useState<any>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [tooltips, setTooltips] = useState<Tooltip[]>([]);
   const [newTooltip, setNewTooltip] = useState<{ x: number; y: number } | null>(null);
   const [tooltipText, setTooltipText] = useState('');
@@ -95,6 +96,10 @@ export default function PhotoAnnotator() {
     }
   };
 
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   if (!photo) {
     return (
       <div className="text-center">
@@ -123,6 +128,7 @@ export default function PhotoAnnotator() {
           alt="Uploaded"
           className="max-w-full h-auto rounded-lg shadow-lg"
           onClick={handleImageClick}
+          onLoad={handleImageLoad}
         />
         
         {tooltips.map((tooltip) => (
@@ -188,7 +194,7 @@ export default function PhotoAnnotator() {
       </div>
 
       <div className="mt-4">
-        <ShareButton shortId={photo.short_id} />
+        {imageLoaded && <ShareButton shortId={photo.short_id} />}
       </div>
     </div>
   );
