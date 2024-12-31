@@ -10,6 +10,7 @@ export default function PhotoAnnotator() {
   const [newTooltip, setNewTooltip] = useState<{ x: number; y: number } | null>(null);
   const [tooltipText, setTooltipText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const generateShortId = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -58,6 +59,7 @@ export default function PhotoAnnotator() {
   };
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    if (isEditOpen) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -96,6 +98,16 @@ export default function PhotoAnnotator() {
     } catch (error) {
       console.error('Error saving tooltip:', error);
     }
+    setIsEditOpen(false);
+  };
+
+  const handleTootipClick = (e: React.MouseEvent<HTMLDivElement>, tooltip: Tooltip) => {
+    setIsEditOpen(true);
+    // overwrite the new tooltip with the clicked tooltip
+    e.stopPropagation();
+    setTooltipText(tooltip.text);
+    setNewTooltip({ x: tooltip.x, y: tooltip.y });
+    setTooltips(tooltips.filter((t) => t.id !== tooltip.id));
   };
 
   const handleImageLoad = () => {
@@ -144,7 +156,7 @@ export default function PhotoAnnotator() {
             }}
           >
             <div className="relative group">
-              <div className="w-6 h-6 bg-blue-500/60 rounded-full cursor-pointer flex items-center justify-center text-white">
+              <div className="w-6 h-6 bg-blue-500/60 rounded-full cursor-pointer flex items-center justify-center text-white" onClick={(e) => {handleTootipClick(e, tooltip)}}>
                 ?
               </div>
               
@@ -184,10 +196,17 @@ export default function PhotoAnnotator() {
                   onClick={() => {
                     setNewTooltip(null);
                     setTooltipText('');
+                    setIsEditOpen(false);
                   }}
-                  className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  className={`
+                    px-3 
+                    py-1 
+                    text-white 
+                    rounded 
+                    ${isEditOpen ? "bg-red-500 hover:bg-red-600" : "bg-gray-500 hover:bg-gray-600"}
+                  `}
                 >
-                  Cancel
+                  {isEditOpen ? 'Delete' : 'Cancel'}
                 </button>
               </div>
             </form>
