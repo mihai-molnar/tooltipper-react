@@ -101,14 +101,33 @@ export default function PhotoAnnotator() {
     setIsEditOpen(false);
   };
 
-  const handleTootipClick = (e: React.MouseEvent<HTMLDivElement>, tooltip: Tooltip) => {
-    setIsEditOpen(true);
-    // overwrite the new tooltip with the clicked tooltip
+  const handleTootipClick = async (
+    e: React.MouseEvent<HTMLDivElement>,
+    tooltip: Tooltip
+  ) => {
     e.stopPropagation();
+    setIsEditOpen(true);
+  
+    // Overwrite the new tooltip with the clicked tooltip
     setTooltipText(tooltip.text);
     setNewTooltip({ x: tooltip.x, y: tooltip.y });
-    setTooltips(tooltips.filter((t) => t.id !== tooltip.id));
+  
+    // Remove the clicked tooltip from the db
+    try {
+      const { error } = await supabase
+        .from('tooltips')
+        .delete()
+        .match({ id: tooltip.id });
+  
+      if (error) throw error;
+  
+      // Remove it from local state as well
+      setTooltips(tooltips.filter((t) => t.id !== tooltip.id));
+    } catch (error) {
+      console.error('Error deleting tooltip:', error);
+    }
   };
+
 
   const handleImageLoad = () => {
     setImageLoaded(true);
