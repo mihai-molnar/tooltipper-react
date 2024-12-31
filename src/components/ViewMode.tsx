@@ -61,7 +61,7 @@ export default function ViewMode() {
   }, [shortId]);
 
   if (!photo) {
-    return <div>Loading...</div>;
+    return <div className="mt-4 text-center text-lg">Loading...</div>;
   }
 
   return (
